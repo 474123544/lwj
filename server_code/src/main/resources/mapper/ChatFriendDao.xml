@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cl.dao.ChatFriendDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cl.entity.ChatFriendEntity" id="chatFriendMap">
+        <result property="uid" column="uid"/>
+        <result property="fid" column="fid"/>
+        <result property="name" column="name"/>
+        <result property="picture" column="picture"/>
+        <result property="role" column="role"/>
+        <result property="tablename" column="tablename"/>
+        <result property="alias" column="alias"/>
+        <result property="type" column="type"/>
+    </resultMap>
+
+    <select id="selectListView"
+		resultType="com.cl.entity.view.ChatFriendView" >
+
+		SELECT  chat_friend.* FROM chat_friend  chat_friend 	        
+        <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+	
+	<select id="selectView"
+		resultType="com.cl.entity.view.ChatFriendView" >
+		SELECT * FROM chat_friend  chat_friend <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+
+    <select id="selectFriendListView" resultType="com.cl.entity.view.ChatFriendView" >
+        SELECT  friend.* ,
+                (select content from chat_message where (uid=${uid} and fid=friend.fid) or (uid=friend.fid and fid=${uid}) order by id desc limit 1) content,
+                (select sum(case when uid=friend.fid and is_read=0 then 1 else 0 end) from chat_message where (uid=${uid} and fid=friend.fid) or (uid=friend.fid and fid=${uid})) notreadnum
+        FROM chat_friend  friend  
+        where uid=${uid} and type=2
+    </select>
+
+
+</mapper>

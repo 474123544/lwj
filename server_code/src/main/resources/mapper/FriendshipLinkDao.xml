@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cl.dao.FriendshipLinkDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cl.entity.FriendshipLinkEntity" id="friendshipLinkMap">
+        <result property="linkName" column="link_name"/>
+        <result property="linkImage" column="link_image"/>
+        <result property="linkUrl" column="link_url"/>
+    </resultMap>
+
+    <select id="selectListView"
+		resultType="com.cl.entity.view.FriendshipLinkView" >
+
+		SELECT  friendship_link.* FROM friendship_link  friendship_link 	        
+        <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+	
+	<select id="selectView"
+		resultType="com.cl.entity.view.FriendshipLinkView" >
+		SELECT * FROM friendship_link  friendship_link <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+
+
+
+</mapper>
