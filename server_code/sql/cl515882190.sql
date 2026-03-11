@@ -663,11 +663,18 @@ LOCK TABLES `zhenduanbingli` WRITE;
 INSERT INTO `zhenduanbingli` VALUES (1,'2025-03-27 07:44:24','1111111111','医生账号1','电话1','','2025-03-27 15:44:24','账号1','手机1','诊断建议1'),(2,'2025-03-27 07:44:24','2222222222','医生账号2','电话2','','2025-03-27 15:44:24','账号2','手机2','诊断建议2'),(3,'2025-03-27 07:44:24','3333333333','医生账号3','电话3','','2025-03-27 15:44:24','账号3','手机3','诊断建议3'),(4,'2025-03-27 07:44:24','4444444444','医生账号4','电话4','','2025-03-27 15:44:24','账号4','手机4','诊断建议4'),(5,'2025-03-27 07:44:24','5555555555','医生账号5','电话5','','2025-03-27 15:44:24','账号5','手机5','诊断建议5'),(6,'2025-03-27 07:44:24','6666666666','医生账号6','电话6','','2025-03-27 15:44:24','账号6','手机6','诊断建议6'),(7,'2025-03-27 07:44:24','7777777777','医生账号7','电话7','','2025-03-27 15:44:24','账号7','手机7','诊断建议7'),(8,'2025-03-27 07:44:24','8888888888','医生账号8','电话8','','2025-03-27 15:44:24','账号8','手机8','诊断建议8'),(9,'2025-03-27 07:44:24','9999999999','医生账号9','电话9','','2025-03-27 15:44:24','账号9','手机9','诊断建议9'),(10,'2025-03-27 07:44:24','11111111110','医生账号10','电话10','','2025-03-27 15:44:24','账号10','手机10','诊断建议10'),(11,'2025-03-27 08:20:25','1743063617739','医生账号1','19819881111','file/1743063623763.docx','2025-03-27 16:20:17','11','13623666666','<p>111</p>');
 /*!40000 ALTER TABLE `zhenduanbingli` ENABLE KEYS */;
 UNLOCK TABLES;
+
+-- 添加就诊通知表的新字段
+ALTER TABLE `jiuzhentongzhi` 
+ADD COLUMN `jieshouzhuangtai` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT '未发送' COMMENT '接收状态' AFTER `tongzhibeizhu`,
+ADD COLUMN `shibaiyuanyin` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '失败原因' AFTER `jieshouzhuangtai`,
+ADD COLUMN `chongshicishu` int(11) DEFAULT 0 COMMENT '重试次数' AFTER `shibaiyuanyin`;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40000 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40000 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
