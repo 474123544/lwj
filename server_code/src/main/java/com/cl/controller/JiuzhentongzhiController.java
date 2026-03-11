@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.*;
-import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
@@ -30,6 +29,7 @@ import com.cl.entity.view.JiuzhentongzhiView;
 
 import com.cl.service.JiuzhentongzhiService;
 import com.cl.service.TokenService;
+import com.cl.service.AppointmentNotificationService;
 import com.cl.utils.PageUtils;
 import com.cl.utils.R;
 import com.cl.utils.MPUtil;
@@ -48,6 +48,9 @@ import com.cl.utils.CommonUtil;
 public class JiuzhentongzhiController {
     @Autowired
     private JiuzhentongzhiService jiuzhentongzhiService;
+
+    @Autowired
+    private AppointmentNotificationService appointmentNotificationService;
 
 
 
@@ -191,74 +194,75 @@ public class JiuzhentongzhiController {
         jiuzhentongzhiService.deleteBatchIds(Arrays.asList(ids));
         return R.ok();
     }
-    
+
     /**
-     * 手动重试发送通知
+     * 重试发送通知
      */
-    @RequestMapping("/retry")
-    @SysLog("手动重试发送通知")
-    public R retry(@RequestBody Long id){
-        JiuzhentongzhiEntity notification = jiuzhentongzhiService.selectById(id);
-        if (notification == null) {
-            return R.error("通知不存在");
-        }
-        
-        try {
-            // 模拟发送通知
-            sendNotification(notification);
-            
-            // 更新通知状态为已发送
-            notification.setJieshouzhuangtai("已发送");
-            notification.setShibaiyuanyin(null);
-            jiuzhentongzhiService.updateById(notification);
-            
-            return R.ok("发送成功");
-        } catch (Exception e) {
-            // 发送失败，更新重试次数和失败原因
-            notification.setChongshicishu(notification.getChongshicishu() + 1);
-            notification.setShibaiyuanyin(e.getMessage());
-            jiuzhentongzhiService.updateById(notification);
-            return R.error("发送失败：" + e.getMessage());
+    @RequestMapping("/retry/{id}")
+    @SysLog("重试发送通知")
+    public R retry(@PathVariable("id") Long id){
+        boolean success = appointmentNotificationService.retrySendNotification(id);
+        if (success) {
+            return R.ok("重试发送成功");
+        } else {
+            return R.error("重试发送失败，请检查通知记录状态或重试次数是否已达上限");
         }
     }
-    
+
     /**
-     * 批量更新通知状态
+     * 批量重试发送通知
      */
-    @RequestMapping("/updateStatus")
-    @SysLog("更新通知状态")
-    public R updateStatus(@RequestBody Long[] ids, @RequestParam String status){
-        List<JiuzhentongzhiEntity> list = new ArrayList<>();
-        for (Long id : ids) {
-            JiuzhentongzhiEntity notification = jiuzhentongzhiService.selectById(id);
-            if (notification != null) {
-                notification.setJieshouzhuangtai(status);
-                list.add(notification);
-            }
-        }
-        jiuzhentongzhiService.updateBatchById(list);
-        return R.ok();
+    @RequestMapping("/retryBatch")
+    @SysLog("批量重试发送通知")
+    public R retryBatch(@RequestBody Long[] ids){
+        int successCount = appointmentNotificationService.batchRetrySendNotifications(ids);
+        return R.ok("批量重试完成，成功：" + successCount + " 条");
     }
-    
-    private void sendNotification(JiuzhentongzhiEntity notification) throws Exception {
-        // 这里实现实际的通知发送逻辑
-        // 例如：发送短信、邮件等
-        // 模拟发送过程
-        System.out.println("手动发送通知：" + notification.getTongzhibianhao() + " 给 " + notification.getZhanghao());
-        
-        // 模拟发送失败的情况
-        // if (Math.random() > 0.5) {
-        //     throw new Exception("发送失败：网络异常");
-        // }
+
+    /**
+     * 获取发送失败的记录列表
+     */
+    @RequestMapping("/failedList")
+    public R failedList(@RequestParam Map<String, Object> params, HttpServletRequest request){
+        EntityWrapper<JiuzhentongzhiEntity> ew = new EntityWrapper<JiuzhentongzhiEntity>();
+        ew.eq("fasongzhuangtai", 2);
+
+        PageUtils page = jiuzhentongzhiService.queryPage(params, MPUtil.sort(MPUtil.between(ew, params), params));
+        return R.ok().put("data", page);
     }
-    
-	
 
+    /**
+     * 获取发送统计
+     */
+    @RequestMapping("/statistics")
+    public R statistics(HttpServletRequest request){
+        // 统计各状态数量
+        int total = jiuzhentongzhiService.selectCount(null);
+        int success = jiuzhentongzhiService.selectCount(
+                new EntityWrapper<JiuzhentongzhiEntity>().eq("fasongzhuangtai", 1));
+        int failed = jiuzhentongzhiService.selectCount(
+                new EntityWrapper<JiuzhentongzhiEntity>().eq("fasongzhuangtai", 2));
+        int pending = jiuzhentongzhiService.selectCount(
+                new EntityWrapper<JiuzhentongzhiEntity>().eq("fasongzhuangtai", 0));
 
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("total", total);
+        stats.put("success", success);
+        stats.put("failed", failed);
+        stats.put("pending", pending);
 
+        return R.ok().put("data", stats);
+    }
 
-
-
-
+    /**
+     * 根据预约编号查询通知记录
+     */
+    @RequestMapping("/byYuyue/{yuyuebianhao}")
+    public R byYuyue(@PathVariable("yuyuebianhao") String yuyuebianhao){
+        List<JiuzhentongzhiEntity> list = jiuzhentongzhiService.selectList(
+                new EntityWrapper<JiuzhentongzhiEntity>().eq("yuyuebianhao", yuyuebianhao)
+                        .orderBy("tongzhileixing", true));
+        return R.ok().put("data", list);
+    }
 
 }

@@ -104,23 +104,37 @@ public class JiuzhentongzhiEntity<T> implements Serializable {
 	private String tongzhibeizhu;
 	
 	/**
-	 * 接收状态
+	 * 预约编号
 	 */
-					
-	private String jieshouzhuangtai;
+	private String yuyuebianhao;
+	
+	/**
+	 * 通知类型（1-预约成功通知，2-就诊前24小时提醒，3-就诊前1小时提醒，4-就诊当天提醒）
+	 */
+	private Integer tongzhileixing;
+	
+	/**
+	 * 发送状态（0-待发送，1-发送成功，2-发送失败）
+	 */
+	private Integer fasongzhuangtai;
 	
 	/**
 	 * 失败原因
 	 */
-					
 	private String shibaiyuanyin;
 	
 	/**
 	 * 重试次数
 	 */
-					
 	private Integer chongshicishu;
-
+	
+	/**
+	 * 计划发送时间
+	 */
+	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat		
+	private Date jihuafasongshijian;
+	
 
 	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat
@@ -235,41 +249,53 @@ public class JiuzhentongzhiEntity<T> implements Serializable {
 	public String getTongzhibeizhu() {
 		return tongzhibeizhu;
 	}
-	/**
-	 * 设置：接收状态
-	 */
-	public void setJieshouzhuangtai(String jieshouzhuangtai) {
-		this.jieshouzhuangtai = jieshouzhuangtai;
+	
+	public String getYuyuebianhao() {
+		return yuyuebianhao;
 	}
-	/**
-	 * 获取：接收状态
-	 */
-	public String getJieshouzhuangtai() {
-		return jieshouzhuangtai;
+
+	public void setYuyuebianhao(String yuyuebianhao) {
+		this.yuyuebianhao = yuyuebianhao;
 	}
-	/**
-	 * 设置：失败原因
-	 */
-	public void setShibaiyuanyin(String shibaiyuanyin) {
-		this.shibaiyuanyin = shibaiyuanyin;
+	
+	public Integer getTongzhileixing() {
+		return tongzhileixing;
 	}
-	/**
-	 * 获取：失败原因
-	 */
+
+	public void setTongzhileixing(Integer tongzhileixing) {
+		this.tongzhileixing = tongzhileixing;
+	}
+	
+	public Integer getFasongzhuangtai() {
+		return fasongzhuangtai;
+	}
+
+	public void setFasongzhuangtai(Integer fasongzhuangtai) {
+		this.fasongzhuangtai = fasongzhuangtai;
+	}
+	
 	public String getShibaiyuanyin() {
 		return shibaiyuanyin;
 	}
-	/**
-	 * 设置：重试次数
-	 */
+
+	public void setShibaiyuanyin(String shibaiyuanyin) {
+		this.shibaiyuanyin = shibaiyuanyin;
+	}
+	
+	public Integer getChongshicishu() {
+		return chongshicishu;
+	}
+
 	public void setChongshicishu(Integer chongshicishu) {
 		this.chongshicishu = chongshicishu;
 	}
-	/**
-	 * 获取：重试次数
-	 */
-	public Integer getChongshicishu() {
-		return chongshicishu;
+	
+	public Date getJihuafasongshijian() {
+		return jihuafasongshijian;
+	}
+
+	public void setJihuafasongshijian(Date jihuafasongshijian) {
+		this.jihuafasongshijian = jihuafasongshijian;
 	}
 
 }
