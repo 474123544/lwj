@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.*;
-import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
@@ -192,67 +191,8 @@ public class JiuzhentongzhiController {
         return R.ok();
     }
     
-    /**
-     * 手动重试发送通知
-     */
-    @RequestMapping("/retry")
-    @SysLog("手动重试发送通知")
-    public R retry(@RequestBody Long id){
-        JiuzhentongzhiEntity notification = jiuzhentongzhiService.selectById(id);
-        if (notification == null) {
-            return R.error("通知不存在");
-        }
-        
-        try {
-            // 模拟发送通知
-            sendNotification(notification);
-            
-            // 更新通知状态为已发送
-            notification.setJieshouzhuangtai("已发送");
-            notification.setShibaiyuanyin(null);
-            jiuzhentongzhiService.updateById(notification);
-            
-            return R.ok("发送成功");
-        } catch (Exception e) {
-            // 发送失败，更新重试次数和失败原因
-            notification.setChongshicishu(notification.getChongshicishu() + 1);
-            notification.setShibaiyuanyin(e.getMessage());
-            jiuzhentongzhiService.updateById(notification);
-            return R.error("发送失败：" + e.getMessage());
-        }
-    }
-    
-    /**
-     * 批量更新通知状态
-     */
-    @RequestMapping("/updateStatus")
-    @SysLog("更新通知状态")
-    public R updateStatus(@RequestBody Long[] ids, @RequestParam String status){
-        List<JiuzhentongzhiEntity> list = new ArrayList<>();
-        for (Long id : ids) {
-            JiuzhentongzhiEntity notification = jiuzhentongzhiService.selectById(id);
-            if (notification != null) {
-                notification.setJieshouzhuangtai(status);
-                list.add(notification);
-            }
-        }
-        jiuzhentongzhiService.updateBatchById(list);
-        return R.ok();
-    }
-    
-    private void sendNotification(JiuzhentongzhiEntity notification) throws Exception {
-        // 这里实现实际的通知发送逻辑
-        // 例如：发送短信、邮件等
-        // 模拟发送过程
-        System.out.println("手动发送通知：" + notification.getTongzhibianhao() + " 给 " + notification.getZhanghao());
-        
-        // 模拟发送失败的情况
-        // if (Math.random() > 0.5) {
-        //     throw new Exception("发送失败：网络异常");
-        // }
-    }
-    
 	
+
 
 
 
