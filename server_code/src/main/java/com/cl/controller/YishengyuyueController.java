@@ -29,6 +29,7 @@ import com.cl.entity.view.YishengyuyueView;
 
 import com.cl.service.YishengyuyueService;
 import com.cl.service.TokenService;
+import com.cl.service.AppointmentNotificationService;
 import com.cl.utils.PageUtils;
 import com.cl.utils.R;
 import com.cl.utils.MPUtil;
@@ -47,6 +48,17 @@ import com.cl.utils.CommonUtil;
 public class YishengyuyueController {
     @Autowired
     private YishengyuyueService yishengyuyueService;
+
+    @Autowired
+    private AppointmentNotificationService appointmentNotificationService;
+
+
+
+
+
+
+
+
 
     /**
      * 后台列表
@@ -182,6 +194,11 @@ public class YishengyuyueController {
             yishengyuyue.setSfsh(sfsh);
             yishengyuyue.setShhf(shhf);
             list.add(yishengyuyue);
+
+            // 如果审核通过，立即创建并发送所有通知
+            if("是".equals(sfsh)) {
+                appointmentNotificationService.createAndSendNotifications(yishengyuyue);
+            }
         }
         yishengyuyueService.updateBatchById(list);
         return R.ok();

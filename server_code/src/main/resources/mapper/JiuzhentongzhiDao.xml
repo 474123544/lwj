@@ -13,6 +13,12 @@
         <result property="zhanghao" column="zhanghao"/>
         <result property="shouji" column="shouji"/>
         <result property="tongzhibeizhu" column="tongzhibeizhu"/>
+        <result property="yuyuebianhao" column="yuyuebianhao"/>
+        <result property="tongzhileixing" column="tongzhileixing"/>
+        <result property="fasongzhuangtai" column="fasongzhuangtai"/>
+        <result property="shibaiyuanyin" column="shibaiyuanyin"/>
+        <result property="chongshicishu" column="chongshicishu"/>
+        <result property="jihuafasongshijian" column="jihuafasongshijian"/>
     </resultMap>
 
     <select id="selectListView"

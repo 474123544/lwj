@@ -674,3 +674,34 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2025-04-03  9:58:39
+
+--
+-- 就诊通知功能扩展字段（开闭原则：通过ALTER添加新字段，不修改原表结构）
+-- 执行日期：2025-03-11
+--
+
+-- 扩展通知备注字段长度
+ALTER TABLE `jiuzhentongzhi` MODIFY COLUMN `tongzhibeizhu` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '通知备注';
+
+-- 添加预约编号字段
+ALTER TABLE `jiuzhentongzhi` ADD COLUMN `yuyuebianhao` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '预约编号' AFTER `tongzhibeizhu`;
+
+-- 添加通知类型字段（1-预约成功通知，2-就诊前24小时提醒，3-就诊前1小时提醒，4-就诊当天提醒）
+ALTER TABLE `jiuzhentongzhi` ADD COLUMN `tongzhileixing` int(11) DEFAULT NULL COMMENT '通知类型（1-预约成功通知，2-就诊前24小时提醒，3-就诊前1小时提醒，4-就诊当天提醒）' AFTER `yuyuebianhao`;
+
+-- 添加发送状态字段（0-待发送，1-发送成功，2-发送失败）
+ALTER TABLE `jiuzhentongzhi` ADD COLUMN `fasongzhuangtai` int(11) DEFAULT '0' COMMENT '发送状态（0-待发送，1-发送成功，2-发送失败）' AFTER `tongzhileixing`;
+
+-- 添加失败原因字段
+ALTER TABLE `jiuzhentongzhi` ADD COLUMN `shibaiyuanyin` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '失败原因' AFTER `fasongzhuangtai`;
+
+-- 添加重试次数字段
+ALTER TABLE `jiuzhentongzhi` ADD COLUMN `chongshicishu` int(11) DEFAULT '0' COMMENT '重试次数' AFTER `shibaiyuanyin`;
+
+-- 添加计划发送时间字段
+ALTER TABLE `jiuzhentongzhi` ADD COLUMN `jihuafasongshijian` datetime DEFAULT NULL COMMENT '计划发送时间' AFTER `chongshicishu`;
+
+-- 添加索引优化查询性能
+ALTER TABLE `jiuzhentongzhi` ADD KEY `idx_yuyuebianhao` (`yuyuebianhao`);
+ALTER TABLE `jiuzhentongzhi` ADD KEY `idx_fasongzhuangtai` (`fasongzhuangtai`);
+ALTER TABLE `jiuzhentongzhi` ADD KEY `idx_zhanghao` (`zhanghao`);
